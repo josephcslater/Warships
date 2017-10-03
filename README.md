@@ -19,8 +19,8 @@ You should be able to simply double-click on the .py file
 Linux:
 Navigate to the file's directory in terminal and run
 
-chmod +x WarshipsOriginal.py
+chmod +x Warships4.3.py
 
 Then, run
 
-./WarshipsOriginal.py
+./Warships4.3.py
