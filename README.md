@@ -12,7 +12,7 @@ https://stackoverflow.com/questions/5253358/how-to-launch-a-python-file-on-windo
 
 
 Windows 10:
-You should be able to simply double-click on the .py file
+https://docs.python.org/3/faq/windows.html
 
 
 Linux:
