@@ -492,11 +492,16 @@ if numPlayers == '1':
         p2AIBoard = makeAIPrintBoard()
         printBoard2(p1.name, p1.guessBoard, "Radar", p2.name, p2AIBoard, "Radar")
         print("\033[1;37;48m")
-        #AIShots.__printHeatMap__([p1c, p1b, p1r, p1s, p1d], p2.guessBoard, AIMode)
-        #-----------------------------------------------------
-        AIGuess = AIShots.search(3, [p1c, p1b, p1r, p1s, p1d], p2.guessBoard)
-#        AIShots.__printHeatMap__([p1c, p1b, p1r, p1s, p1d], p2.guessBoard)
-        #-----------------------------------------------------
+        
+        #======================PRINT HEATMAP=========================================
+#        AIMode = AIShots.updateMode()
+#        if AIMode == "search":
+#            AIGuess = AIShots.search(3, [p1c, p1b, p1r, p1s, p1d], p2.guessBoard)
+#        elif AIMode == "target":
+#            AIGuess = AIShots.target(3, [p1c, p1b, p1r, p1s, p1d])
+#        AIShots.__printHeatMap__([p1c, p1b, p1r, p1s, p1d], p2.guessBoard, AIMode)
+        #============================================================================
+        
         p1Sunk = []
         if p1c == True:
             p1Sunk.append("aircraft carrier")

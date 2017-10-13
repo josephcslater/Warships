@@ -3,7 +3,7 @@
 # =============================================================================
 
 import matplotlib.pyplot as plt
-import random
+import random as rand
 import numpy as np
 
 AIBoard = np.array([[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
@@ -202,14 +202,16 @@ def search(diff, ships, p2board):
                             AIBoardHeatMap[row][col] += 1
                     
         maxVal = 0
+        target = []
         for row in range(0, 10):
             for col in range(0, 10):
                 if AIBoardHeatMap[row][col] > maxVal:
                     maxVal = AIBoardHeatMap[row][col]
-        for row in range(0, 10):
-            for col in range(0, 10):
-                if AIBoardHeatMap[row][col] == maxVal:
-                    return(row, col)
+        
+        while True:
+            target = (rand.randint(0, 9), rand.randint(0, 9))
+            if AIBoardHeatMap[target[0]][target[1]] == maxVal:
+                return target
         
         
 
@@ -265,11 +267,16 @@ def target(diff, ships):
         for row in range(0, 10):
             for col in range(0, 10):
                 
-                #Destroyer Check
-                #if ships[4] == False and AIBoard[row][col] == 'X':
                 if AIBoard[row][col] == 'X':
-                    
-        #=======IF ON EDGE THE OPPOSITE SIDE WONT INCREMENT SO NO SHOT WILL BE TAKEN================
+                    if col-1 >= 0 and AIBoard[row][col-1] == ' ':
+                        AIBoardHeatMap[row][col-1] += 1
+                    if col+1 <= 9 and AIBoard[row][col+1] == ' ':
+                        AIBoardHeatMap[row][col+1] += 1
+                    if row-1 >= 0 and AIBoard[row-1][col] == ' ':
+                        AIBoardHeatMap[row-1][col] += 1
+                    if row+1 <= 9 and AIBoard[row+1][col] == ' ':
+                        AIBoardHeatMap[row+1][col] += 1
+                        
                     if col-1 >= 0 and col+1 <= 9:
                         if AIBoard[row][col+1] == ' ':
                             AIBoardHeatMap[row][col+1] += 1
@@ -295,7 +302,6 @@ def target(diff, ships):
                             AIBoardHeatMap[row][col-1] = 0
                             
                     if row+1 <= 9 and row-1 >= 0:
-                        #THIS DIDNT TRIGGER WHEN ON RIGHT SIDE
                         if AIBoard[row-1][col] == ' ':
                             AIBoardHeatMap[row-1][col] += 1
                         if AIBoard[row+1][col] == 'X':
@@ -313,3 +319,5 @@ def target(diff, ships):
             for col in range(0, 10):
                 if AIBoardHeatMap[row][col] == maxVal:
                     return (row, col)
+                    
+        
