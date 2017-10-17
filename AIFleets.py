@@ -6,6 +6,19 @@ import random
 import numpy as np
 
 def __checkValidShipPlacement__(length, coords, board):
+    """
+    Checks if a requested ship placement is valid
+    
+    Parameters
+    -------------------
+    
+    length: int
+        Length of ship
+    coords: tuple (int, int, str)
+        (startCoordY, startCoordX, direction('u', 'd', 'l', 'r'))
+    board: Numpy array[10][10]
+        Filled with ' ', 'O', 'X'
+    """
     if coords[2] == 'l':
         if coords[1] < length-1:
             return(False)
@@ -33,6 +46,15 @@ def __checkValidShipPlacement__(length, coords, board):
     return(True)
 
 def __getStartCoords__():
+    """
+    Creates random start coordinates for a ship
+    
+    Returns
+    -------------------
+    
+    coords: tuple (int, int, str)
+        (startCoordY, startCoordX, direction('u', 'd', 'l', 'r'))
+    """
     coords = (0, 0, 'l')
     direction = random.randint(0, 3)
     if direction == 0:
@@ -45,7 +67,16 @@ def __getStartCoords__():
         coords = (random.randint(0, 9), random.randint(0, 9), 'd')
     return coords
     
-def getFleet():
+def getfleet():
+    """
+    Creates a random fleet
+    
+    Returns
+    -------------------
+    
+    board: Numpy array[10][10]
+        Board holding a randomly generated fleet
+    """
     board = np.array([[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
                       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
                       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],

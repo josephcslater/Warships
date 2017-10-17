@@ -18,6 +18,15 @@ AIBoard = np.array([[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
                     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']])
 
 def updateMode():
+    """
+    Updates the AI mode
+    
+    Returns
+    -------------------
+    
+    mode: str
+        "target" or "search"
+    """
     for row in range(0, 10):
         for col in range(0, 10):
             if AIBoard[row][col] == 'X':
@@ -25,15 +34,43 @@ def updateMode():
     return "search"
 
 def updateAIBoardSinking(shipCoords):
+    """
+    Call once a ship is sunk. Replaces the 'X's on the AI board with 'S's to denote a sunk ship
+    """
     for i in range(0, len(shipCoords)):
         row = shipCoords[i][0]
         col = shipCoords[i][1]
         AIBoard[row][col] = 'S'
 
 def updateAIBoard(guess, value):
+    """
+    Mutator function for AIBoard
+    
+    Parameters
+    -------------------
+    
+    guess: Tuple (int, int)
+        Coordinates of guess (row, column)
+    value: str
+        Use 'O' or 'X'
+    """
     AIBoard[guess[0]][guess[1]] = value
 
 def checkValidShotLocation(guess):
+    """
+    Checks if a shot location is valid
+    
+    Parameters
+    -------------------
+    
+    guess: Tuple (int, int)
+        Coordinates of guess (row, column)
+    
+    Returns
+    -------------------
+    
+    Boolean, true if valid location, false if not
+    """
     if str(guess[0]) in "0123456789" and str(guess[1]) in "0123456789":
         if AIBoard[guess[0]][guess[1]] == 'O' or AIBoard[guess[0]][guess[1]] == 'X' or AIBoard[guess[0]][guess[1]] == 'S':
             return False
@@ -41,6 +78,19 @@ def checkValidShotLocation(guess):
     return False
 
 def __printHeatMap__(ships, p2board, mode):
+    """
+    For debugging only. Prints the heatmap of the AI search or target board
+    
+    Parameters
+    -------------------
+    
+    ships: list
+        5-element list of booleans [carrier, battleship, cruiser, submarine, destroyer]
+    p2board: Numpy array[10][10]
+        p2.guessBoard
+    mode: str
+        AIMode: "target" or "search"
+    """
     if mode == "search":
         search(3, ships, p2board)
     else:
@@ -64,15 +114,15 @@ def search(diff, ships, p2board):
     guess = (0, 0)
     if diff == 1:
         while True:
-            row = random.randint(0, 9)
-            col = random.randint(0, 9)
+            row = rand.randint(0, 9)
+            col = rand.randint(0, 9)
             guess = (row, col)
             if checkValidShotLocation(guess) == True:
                 return guess
     elif diff == 2:
         while True:
-            row = random.randint(0, 9)
-            col = random.randint(0, 9)
+            row = rand.randint(0, 9)
+            col = rand.randint(0, 9)
             if (1+row)%2 == (1+col)%2:
                 guess = (row, col)
                 if checkValidShotLocation(guess) == True:
@@ -221,103 +271,71 @@ def search(diff, ships, p2board):
 
 
 
-def target(diff, ships):
-    if diff == 1 or diff == 2:
-        for row in range(0, 10):
-            for col in range(0, 10):
-                if AIBoard[row][col] == 'X':
-                    if col > 0:
-                        if AIBoard[row][col-1] == ' ':
-                            return(row, col-1)
-                    if row < 9:
-                        if AIBoard[row+1][col] == ' ':
-                            return(row+1, col)
-                    if col < 9:
-                        if AIBoard[row][col+1] == ' ':
-                            return(row, col+1)
-                    if row > 0:
-                        if AIBoard[row-1][col] == ' ':
-                            return(row-1, col)
-                            
-
-
-
-
-
-
-
-
-
-
-
-
-    elif diff == 3:
-        global AIBoardHeatMap
-        AIBoardHeatMap = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
-        #For each space
-        for row in range(0, 10):
-            for col in range(0, 10):
-                
-                if AIBoard[row][col] == 'X':
-                    if col-1 >= 0 and AIBoard[row][col-1] == ' ':
-                        AIBoardHeatMap[row][col-1] += 1
-                    if col+1 <= 9 and AIBoard[row][col+1] == ' ':
-                        AIBoardHeatMap[row][col+1] += 1
-                    if row-1 >= 0 and AIBoard[row-1][col] == ' ':
-                        AIBoardHeatMap[row-1][col] += 1
-                    if row+1 <= 9 and AIBoard[row+1][col] == ' ':
-                        AIBoardHeatMap[row+1][col] += 1
-                        
-                    if col-1 >= 0 and col+1 <= 9:
-                        if AIBoard[row][col+1] == ' ':
-                            AIBoardHeatMap[row][col+1] += 1
-                        if AIBoard[row][col-1] == 'X':
-                            AIBoardHeatMap[row][col+1] += 1
-                        if AIBoard[row][col+1] == 'O' or AIBoard[row][col+1] == 'X':
-                            AIBoardHeatMap[row][col+1] = 0
-                            
-                    if row-1 >= 0 and row+1 <= 9:
-                        if AIBoard[row+1][col] == ' ':
-                            AIBoardHeatMap[row+1][col] += 1
-                        if AIBoard[row-1][col] == 'X':
-                            AIBoardHeatMap[row+1][col] += 1
-                        if AIBoard[row+1][col] == 'O' or AIBoard[row+1][col] == 'X':
-                            AIBoardHeatMap[row+1][col] = 0
-                            
-                    if col+1 <= 9 and col-1 >= 0:
-                        if AIBoard[row][col-1] == ' ':
-                            AIBoardHeatMap[row][col-1] += 1
-                        if AIBoard[row][col+1] == 'X':
-                            AIBoardHeatMap[row][col-1] += 1
-                        if AIBoard[row][col-1] == 'O' or AIBoard[row][col-1] == 'X':
-                            AIBoardHeatMap[row][col-1] = 0
-                            
-                    if row+1 <= 9 and row-1 >= 0:
-                        if AIBoard[row-1][col] == ' ':
-                            AIBoardHeatMap[row-1][col] += 1
-                        if AIBoard[row+1][col] == 'X':
-                            AIBoardHeatMap[row-1][col] += 1
-                        if AIBoard[row-1][col] == 'O' or AIBoard[row-1][col] == 'X':
-                            AIBoardHeatMap[row-1][col] = 0
-                
-        maxVal = 0
-        for row in range(0, 10):
-            for col in range(0, 10):
-                if AIBoardHeatMap[row][col] > maxVal:
-                    maxVal = AIBoardHeatMap[row][col]
-        
-        for row in range(0, 10):
-            for col in range(0, 10):
-                if AIBoardHeatMap[row][col] == maxVal:
-                    return (row, col)
+def target(ships):
+    global AIBoardHeatMap
+    AIBoardHeatMap = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+    #For each space
+    for row in range(0, 10):
+        for col in range(0, 10):
+            
+            if AIBoard[row][col] == 'X':
+                if col-1 >= 0 and AIBoard[row][col-1] == ' ':
+                    AIBoardHeatMap[row][col-1] += 1
+                if col+1 <= 9 and AIBoard[row][col+1] == ' ':
+                    AIBoardHeatMap[row][col+1] += 1
+                if row-1 >= 0 and AIBoard[row-1][col] == ' ':
+                    AIBoardHeatMap[row-1][col] += 1
+                if row+1 <= 9 and AIBoard[row+1][col] == ' ':
+                    AIBoardHeatMap[row+1][col] += 1
                     
-        
+                if col-1 >= 0 and col+1 <= 9:
+                    if AIBoard[row][col+1] == ' ':
+                        AIBoardHeatMap[row][col+1] += 1
+                    if AIBoard[row][col-1] == 'X':
+                        AIBoardHeatMap[row][col+1] += 1
+                    if AIBoard[row][col+1] == 'O' or AIBoard[row][col+1] == 'X':
+                        AIBoardHeatMap[row][col+1] = 0
+                        
+                if row-1 >= 0 and row+1 <= 9:
+                    if AIBoard[row+1][col] == ' ':
+                        AIBoardHeatMap[row+1][col] += 1
+                    if AIBoard[row-1][col] == 'X':
+                        AIBoardHeatMap[row+1][col] += 1
+                    if AIBoard[row+1][col] == 'O' or AIBoard[row+1][col] == 'X':
+                        AIBoardHeatMap[row+1][col] = 0
+                        
+                if col+1 <= 9 and col-1 >= 0:
+                    if AIBoard[row][col-1] == ' ':
+                        AIBoardHeatMap[row][col-1] += 1
+                    if AIBoard[row][col+1] == 'X':
+                        AIBoardHeatMap[row][col-1] += 1
+                    if AIBoard[row][col-1] == 'O' or AIBoard[row][col-1] == 'X':
+                        AIBoardHeatMap[row][col-1] = 0
+                        
+                if row+1 <= 9 and row-1 >= 0:
+                    if AIBoard[row-1][col] == ' ':
+                        AIBoardHeatMap[row-1][col] += 1
+                    if AIBoard[row+1][col] == 'X':
+                        AIBoardHeatMap[row-1][col] += 1
+                    if AIBoard[row-1][col] == 'O' or AIBoard[row-1][col] == 'X':
+                        AIBoardHeatMap[row-1][col] = 0
+            
+    maxVal = 0
+    for row in range(0, 10):
+        for col in range(0, 10):
+            if AIBoardHeatMap[row][col] > maxVal:
+                maxVal = AIBoardHeatMap[row][col]
+    
+    for row in range(0, 10):
+        for col in range(0, 10):
+            if AIBoardHeatMap[row][col] == maxVal:
+                return (row, col)

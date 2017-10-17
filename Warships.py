@@ -9,7 +9,6 @@
 import numpy as np
 import AIFleets, AIShots
 import names
-import matplotlib.pyplot as plt
 
 class player():
     
@@ -188,6 +187,19 @@ def __convertAlphaToNum__(a):
     return(a)
 
 def __checkValidShipPlacement__(length, coords, board):
+    """
+    Checks if a requested ship placement is valid
+    
+    Parameters
+    -------------------
+    
+    length: int
+        Length of ship
+    coords: tuple (int, int, str)
+        (startCoordY, startCoordX, direction('u', 'd', 'l', 'r'))
+    board: 10x10 numpy array
+        Filled with ' ', 'O', 'X'
+    """
     if coords[2] == 'l':
         if coords[1] < length-1:
             return(False)
@@ -452,13 +464,13 @@ if numPlayers == '1':
     while True:
         print("Select AI Difficulty:\nEasy     Medium     Hard")
         inpt = input()
-        if inpt.lower() == "easy" or inpt.lower() == 'e':
+        if inpt.lower() in "easy" or "easy" in inpt.lower():
             AIDiff = 1
             break
-        elif inpt.lower() == "medium" or inpt.lower() == 'm':
+        elif inpt.lower() in "medium" or "medium" in inpt.lower():
             AIDiff = 2
             break
-        elif inpt.lower() == "hard" or inpt.lower() == 'h':
+        elif inpt.lower() in "hard" or "hard" in inpt.lower():
             AIDiff = 3
             break
     p1.setShips("p1")
@@ -498,7 +510,7 @@ if numPlayers == '1':
 #        if AIMode == "search":
 #            AIGuess = AIShots.search(3, [p1c, p1b, p1r, p1s, p1d], p2.guessBoard)
 #        elif AIMode == "target":
-#            AIGuess = AIShots.target(3, [p1c, p1b, p1r, p1s, p1d])
+#            AIGuess = AIShots.target([p1c, p1b, p1r, p1s, p1d])
 #        AIShots.__printHeatMap__([p1c, p1b, p1r, p1s, p1d], p2.guessBoard, AIMode)
         #============================================================================
         
@@ -580,7 +592,7 @@ if numPlayers == '1':
             if AIMode == "search":
                 AIGuess = AIShots.search(1, [], p2.guessBoard)
             elif AIMode == "target":
-                AIGuess = AIShots.target(1, [])
+                AIGuess = AIShots.target([p1c, p1b, p1r, p1s, p1d])
 
         #Medium AI
         elif AIDiff == 2:
@@ -588,7 +600,7 @@ if numPlayers == '1':
             if AIMode == "search":
                 AIGuess = AIShots.search(2, [], p2.guessBoard)
             elif AIMode == "target":
-                AIGuess = AIShots.target(2, [])
+                AIGuess = AIShots.target([p1c, p1b, p1r, p1s, p1d])
                 
         #Hard AI
         elif AIDiff == 3:
@@ -596,7 +608,7 @@ if numPlayers == '1':
             if AIMode == "search":
                 AIGuess = AIShots.search(3, [p1c, p1b, p1r, p1s, p1d], p2.guessBoard)
             elif AIMode == "target":
-                AIGuess = AIShots.target(3, [p1c, p1b, p1r, p1s, p1d])
+                AIGuess = AIShots.target([p1c, p1b, p1r, p1s, p1d])
 
 
 
