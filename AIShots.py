@@ -77,7 +77,7 @@ def checkValidShotLocation(guess):
         return True
     return False
 
-def __printHeatMap__(ships, p2board, mode):
+def __printHeatMap__(ships, p2board, mode, diff):
     """
     For debugging only. Prints the heatmap of the AI search or target board
     
@@ -92,9 +92,9 @@ def __printHeatMap__(ships, p2board, mode):
         AIMode: "target" or "search"
     """
     if mode == "search":
-        search(3, ships, p2board)
+        search(diff, ships, p2board)
     else:
-        target(3, ships)
+        target(ships)
     a = AIBoardHeatMap
     plt.imshow(a, cmap='binary')
     plt.show()
@@ -111,157 +111,139 @@ def search(diff, ships, p2board):
                                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
-    guess = (0, 0)
-    if diff == 1:
-        while True:
-            row = rand.randint(0, 9)
-            col = rand.randint(0, 9)
-            guess = (row, col)
-            if checkValidShotLocation(guess) == True:
-                return guess
-    elif diff == 2:
-        while True:
-            row = rand.randint(0, 9)
-            col = rand.randint(0, 9)
-            if (1+row)%2 == (1+col)%2:
-                guess = (row, col)
-                if checkValidShotLocation(guess) == True:
-                    return guess
-        
-    elif diff == 3:
-        #For each space
-        for row in range(0, 10):
-            for col in range(0, 10):
+    #For each space
+    for row in range(0, 10):
+        for col in range(0, 10):
+            
+            #Destroyer Check
+            if ships[4] == False and p2board[row][col] == ' ':
+                if col-1 >= 0:
+                    if AIBoard[row][col-1] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row-1 >= 0:
+                    if AIBoard[row-1][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if col+1 <= 9:
+                    if AIBoard[row][col+1] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row+1 <= 9:
+                    if AIBoard[row+1][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+            
+            #Sub Check
+            if ships[3] == False and p2board[row][col] == ' ' and diff >= 2:
+                if col-1 >= 0 and col+1 <= 9:
+                    if AIBoard[row][col-1] == ' ' and AIBoard[row][col+1] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row-1 >= 0 and row+1 <= 9:
+                    if AIBoard[row-1][col] == ' ' and AIBoard[row+1][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if col-2 >= 0:
+                    if AIBoard[row][col-2] == ' ' and AIBoard[row][col-1] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row-2 >= 0:
+                    if AIBoard[row-2][col] == ' ' and AIBoard[row-1][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if col+2 <= 9:
+                    if AIBoard[row][col-2] == ' ' and AIBoard[row][col+1] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row+2 <= 9:
+                    if AIBoard[row-2][col] == ' ' and AIBoard[row+1][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+            
+            #Cruiser Check
+            if ships[2] == False and p2board[row][col] == ' ' and diff >= 2:
+                if col-1 >= 0 and col+1 <= 9:
+                    if AIBoard[row][col-1] == ' ' and AIBoard[row][col+1] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row-1 >= 0 and row+1 <= 9:
+                    if AIBoard[row-1][col] == ' ' and AIBoard[row+1][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if col-2 >= 0:
+                    if AIBoard[row][col-2] == ' ' and AIBoard[row][col-1] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row-2 >= 0:
+                    if AIBoard[row-2][col] == ' ' and AIBoard[row-1][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if col+2 <= 9:
+                    if AIBoard[row][col-2] == ' ' and AIBoard[row][col+1] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row+2 <= 9:
+                    if AIBoard[row-2][col] == ' ' and AIBoard[row+1][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                        
+            #Battleship Check
+            if ships[1] == False and p2board[row][col] == ' ' and diff == 3:
+                if col-3 >= 0:
+                    if AIBoard[row][col-1] == ' ' and AIBoard[row][col-2] == ' ' and AIBoard[row][col-3] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if col-2 >= 0 and col+1 <= 9:
+                    if AIBoard[row][col-1] == ' ' and AIBoard[row][col-2] == ' ' and AIBoard[row][col+1] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if col-1 >= 0 and col+2 <= 9:
+                    if AIBoard[row][col-1] == ' ' and AIBoard[row][col+1] == ' ' and AIBoard[row][col+2] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if col+3 <= 9:
+                    if AIBoard[row][col+1] == ' ' and AIBoard[row][col+2] == ' ' and AIBoard[row][col+3] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row-3 >= 0:
+                    if AIBoard[row-1][col] == ' ' and AIBoard[row-2][col] == ' ' and AIBoard[row-3][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row-2 >= 0 and row+1 <= 9:
+                    if AIBoard[row-1][col] == ' ' and AIBoard[row-2][col] == ' ' and AIBoard[row+1][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row-1 >= 0 and row+2 <= 9:
+                    if AIBoard[row-1][col] == ' ' and AIBoard[row+1][col] == ' ' and AIBoard[row+2][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row+3 <= 9:
+                    if AIBoard[row+1][col] == ' ' and AIBoard[row+2][col] == ' ' and AIBoard[row+3][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
                 
-                #Destroyer Check
-                if ships[4] == False and p2board[row][col] == ' ':
-                    if col-1 >= 0:
-                        if AIBoard[row][col-1] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row-1 >= 0:
-                        if AIBoard[row-1][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if col+1 <= 9:
-                        if AIBoard[row][col+1] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row+1 <= 9:
-                        if AIBoard[row+1][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
+            #Carrier Check
+            if ships[0] == False and p2board[row][col] == ' ' and diff == 3:
+                if col-4 >= 0:
+                    if AIBoard[row][col-1] == ' ' and AIBoard[row][col-2] == ' ' and AIBoard[row][col-3] == ' ' and AIBoard[row][col-4] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if col-3 >= 0 and col+1 <= 9:
+                    if AIBoard[row][col-1] == ' ' and AIBoard[row][col-2] == ' ' and AIBoard[row][col-3] == ' ' and AIBoard[row][col+1] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if col-2 >= 0 and col+2 <= 9:
+                    if AIBoard[row][col-1] == ' ' and AIBoard[row][col-2] == ' ' and AIBoard[row][col+1] == ' ' and AIBoard[row][col+2] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if col-1 >= 0 and col+3 <= 9:
+                    if AIBoard[row][col-1] == ' ' and AIBoard[row][col+1] == ' ' and AIBoard[row][col+2] == ' ' and AIBoard[row][col+3] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if col+4 <= 9:
+                    if AIBoard[row][col+1] == ' ' and AIBoard[row][col+2] == ' ' and AIBoard[row][col+3] == ' ' and AIBoard[row][col+4] == ' ':
+                        AIBoardHeatMap[row][col] += 1
                 
-                #Sub Check
-                if ships[3] == False and p2board[row][col] == ' ':
-                    if col-1 >= 0 and col+1 <= 9:
-                        if AIBoard[row][col-1] == ' ' and AIBoard[row][col+1] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row-1 >= 0 and row+1 <= 9:
-                        if AIBoard[row-1][col] == ' ' and AIBoard[row+1][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if col-2 >= 0:
-                        if AIBoard[row][col-2] == ' ' and AIBoard[row][col-1] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row-2 >= 0:
-                        if AIBoard[row-2][col] == ' ' and AIBoard[row-1][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if col+2 <= 9:
-                        if AIBoard[row][col-2] == ' ' and AIBoard[row][col+1] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row+2 <= 9:
-                        if AIBoard[row-2][col] == ' ' and AIBoard[row+1][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                
-                #Cruiser Check
-                if ships[2] == False and p2board[row][col] == ' ':
-                    if col-1 >= 0 and col+1 <= 9:
-                        if AIBoard[row][col-1] == ' ' and AIBoard[row][col+1] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row-1 >= 0 and row+1 <= 9:
-                        if AIBoard[row-1][col] == ' ' and AIBoard[row+1][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if col-2 >= 0:
-                        if AIBoard[row][col-2] == ' ' and AIBoard[row][col-1] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row-2 >= 0:
-                        if AIBoard[row-2][col] == ' ' and AIBoard[row-1][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if col+2 <= 9:
-                        if AIBoard[row][col-2] == ' ' and AIBoard[row][col+1] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row+2 <= 9:
-                        if AIBoard[row-2][col] == ' ' and AIBoard[row+1][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                            
-                #Battleship Check
-                if ships[1] == False and p2board[row][col] == ' ':
-                    if col-3 >= 0:
-                        if AIBoard[row][col-1] == ' ' and AIBoard[row][col-2] == ' ' and AIBoard[row][col-3] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if col-2 >= 0 and col+1 <= 9:
-                        if AIBoard[row][col-1] == ' ' and AIBoard[row][col-2] == ' ' and AIBoard[row][col+1] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if col-1 >= 0 and col+2 <= 9:
-                        if AIBoard[row][col-1] == ' ' and AIBoard[row][col+1] == ' ' and AIBoard[row][col+2] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if col+3 <= 9:
-                        if AIBoard[row][col+1] == ' ' and AIBoard[row][col+2] == ' ' and AIBoard[row][col+3] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row-3 >= 0:
-                        if AIBoard[row-1][col] == ' ' and AIBoard[row-2][col] == ' ' and AIBoard[row-3][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row-2 >= 0 and row+1 <= 9:
-                        if AIBoard[row-1][col] == ' ' and AIBoard[row-2][col] == ' ' and AIBoard[row+1][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row-1 >= 0 and row+2 <= 9:
-                        if AIBoard[row-1][col] == ' ' and AIBoard[row+1][col] == ' ' and AIBoard[row+2][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row+3 <= 9:
-                        if AIBoard[row+1][col] == ' ' and AIBoard[row+2][col] == ' ' and AIBoard[row+3][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
+                if row-4 >= 0:
+                    if AIBoard[row-1][col] == ' ' and AIBoard[row-2][col] == ' ' and AIBoard[row-3][col] == ' ' and AIBoard[row-4][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row-3 >= 0 and row+1 <= 9:
+                    if AIBoard[row-1][col] == ' ' and AIBoard[row-2][col] == ' ' and AIBoard[row-3][col] == ' ' and AIBoard[row-1][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row-2 >= 0 and row+2 <= 9:
+                    if AIBoard[row-1][col] == ' ' and AIBoard[row-2][col] == ' ' and AIBoard[row+1][col] == ' ' and AIBoard[row+2][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row-1 >= 0 and row+3 <= 9:
+                    if AIBoard[row-1][col] == ' ' and AIBoard[row+1][col] == ' ' and AIBoard[row+2][col] == ' ' and AIBoard[row+3][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
+                if row+4 <= 9:
+                    if AIBoard[row-1][col] == ' ' and AIBoard[row+2][col] == ' ' and AIBoard[row+3][col] == ' ' and AIBoard[row+4][col] == ' ':
+                        AIBoardHeatMap[row][col] += 1
                     
-                #Carrier Check
-                if ships[0] == False and p2board[row][col] == ' ':
-                    if col-4 >= 0:
-                        if AIBoard[row][col-1] == ' ' and AIBoard[row][col-2] == ' ' and AIBoard[row][col-3] == ' ' and AIBoard[row][col-4] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if col-3 >= 0 and col+1 <= 9:
-                        if AIBoard[row][col-1] == ' ' and AIBoard[row][col-2] == ' ' and AIBoard[row][col-3] == ' ' and AIBoard[row][col+1] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if col-2 >= 0 and col+2 <= 9:
-                        if AIBoard[row][col-1] == ' ' and AIBoard[row][col-2] == ' ' and AIBoard[row][col+1] == ' ' and AIBoard[row][col+2] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if col-1 >= 0 and col+3 <= 9:
-                        if AIBoard[row][col-1] == ' ' and AIBoard[row][col+1] == ' ' and AIBoard[row][col+2] == ' ' and AIBoard[row][col+3] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if col+4 <= 9:
-                        if AIBoard[row][col+1] == ' ' and AIBoard[row][col+2] == ' ' and AIBoard[row][col+3] == ' ' and AIBoard[row][col+4] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    
-                    if row-4 >= 0:
-                        if AIBoard[row-1][col] == ' ' and AIBoard[row-2][col] == ' ' and AIBoard[row-3][col] == ' ' and AIBoard[row-4][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row-3 >= 0 and row+1 <= 9:
-                        if AIBoard[row-1][col] == ' ' and AIBoard[row-2][col] == ' ' and AIBoard[row-3][col] == ' ' and AIBoard[row-1][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row-2 >= 0 and row+2 <= 9:
-                        if AIBoard[row-1][col] == ' ' and AIBoard[row-2][col] == ' ' and AIBoard[row+1][col] == ' ' and AIBoard[row+2][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row-1 >= 0 and row+3 <= 9:
-                        if AIBoard[row-1][col] == ' ' and AIBoard[row+1][col] == ' ' and AIBoard[row+2][col] == ' ' and AIBoard[row+3][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    if row+4 <= 9:
-                        if AIBoard[row-1][col] == ' ' and AIBoard[row+2][col] == ' ' and AIBoard[row+3][col] == ' ' and AIBoard[row+4][col] == ' ':
-                            AIBoardHeatMap[row][col] += 1
-                    
-        maxVal = 0
-        target = []
-        for row in range(0, 10):
-            for col in range(0, 10):
-                if AIBoardHeatMap[row][col] > maxVal:
-                    maxVal = AIBoardHeatMap[row][col]
-        
-        while True:
-            target = (rand.randint(0, 9), rand.randint(0, 9))
-            if AIBoardHeatMap[target[0]][target[1]] == maxVal:
-                return target
+    maxVal = 0
+    target = []
+    for row in range(0, 10):
+        for col in range(0, 10):
+            if AIBoardHeatMap[row][col] > maxVal:
+                maxVal = AIBoardHeatMap[row][col]
+    
+    while True:
+        target = (rand.randint(0, 9), rand.randint(0, 9))
+        if AIBoardHeatMap[target[0]][target[1]] == maxVal:
+            return target
         
         
 
@@ -283,6 +265,7 @@ def target(ships):
                                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+    
     #For each space
     for row in range(0, 10):
         for col in range(0, 10):

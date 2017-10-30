@@ -67,7 +67,7 @@ def __getStartCoords__():
         coords = (random.randint(0, 9), random.randint(0, 9), 'd')
     return coords
     
-def getfleet():
+def getFleet():
     """
     Creates a random fleet
     
