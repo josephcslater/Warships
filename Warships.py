@@ -1,15 +1,22 @@
-#!/usr/bin/env python
+#!/home/rjslater/anaconda3/bin/python
 #==============================================================================
 # Title: Warships
 # Author: Ryan Slater
 # Date: 10/9/2017
-# Changes: Improved Hard Difficulty and other minor tweaks
 #==============================================================================
 
 import numpy as np
 import AIFleets, AIShots
 import names
-import matplotlib.pyplot as plt
+
+class colors:
+    P1 = "\033[35m"
+    P2 = "\033[33m"
+    RED = "\033[31m"
+    WHITE = "\033[0m"
+    WATER = "\033[36m"
+    SHIPS = "\033[32m"
+    
 
 class player():
     
@@ -48,9 +55,9 @@ class player():
         coords = ()
         while True:
             if player == "p1":
-                print("\033[1;35;48m" + self.name + "\033[1;37;48m, set your " + shipName)
+                print(colors.P1 + self.name + colors.WHITE + ", set your " + shipName)
             else:
-                print("\033[1;33;48m" + self.name + "\033[1;37;48m, set your " + shipName)
+                print(colors.P2 + self.name + colors.WHITE + ", set your " + shipName)
             inpt = __modInput__(input())
             if inpt != "THISISABADSTRINGSJKLA;FDSIAF380WADSF":
                 coords = (__convertAlphaToNum__(inpt[0]), int(inpt[1]), inpt[2])
@@ -77,14 +84,14 @@ class player():
         
     def setShips(self, player):
         if player == "p1":
-            print("\033[1;35;48m" + self.name + "\033[1;37;48m, would you like a randomly generated fleet?")
+            print(colors.P1 + self.name + '' + colors.WHITE + ", would you like a randomly generated fleet?")
         else:
-            print("\033[1;33;48m" + self.name + "\033[1;37;48m, would you like a randomly generated fleet?")
+            print(colors.P2 + self.name + '' + colors.WHITE + ", would you like a randomly generated fleet?")
         inpt = input().lower()
         if inpt in "yes" or "yes" in inpt:
             self.fleetBoard = AIFleets.getFleet()
             printBoard(self.name, self.fleetBoard, "Fleet", player)
-            print("\033[1;37;48mPress Enter to continue")
+            print(colors.WHITE + "Press Enter to continue")
             x = input()
             print(500*"\n")
         else:
@@ -94,9 +101,9 @@ class player():
                 while True:
                     printBoard(self.name, self.fleetBoard, "Fleet", player)
                     if player == "p1":
-                        print("\033[1;35;48m" + self.name + "\033[1;37;48m, what ship would you like to place?")
+                        print(colors.P1 + self.name + colors.WHITE + ", what ship would you like to place?")
                     else:
-                        print("\033[1;33;48m" + self.name + "\033[1;37;48m, what ship would you like to place?")
+                        print(colors.P2 + self.name + colors.WHITE + ", what ship would you like to place?")
                     print("       Ship       | Length")
                     print("------------------+-------")
                     for i in range(0, len(options)):
@@ -130,7 +137,7 @@ class player():
                     if c == True and b == True and r == True and s == True and d == True:
                         break
                 printBoard(self.name, self.fleetBoard, "Fleet", player)
-                print("\033[1;37;48mWould you like to edit your fleet?")
+                print(colors.WHITE + "Would you like to edit your fleet?")
                 edit = input().lower()
                 if edit in "yes" or "yes" in edit:
                     continue
@@ -188,6 +195,19 @@ def __convertAlphaToNum__(a):
     return(a)
 
 def __checkValidShipPlacement__(length, coords, board):
+    """
+    Checks if a requested ship placement is valid
+    
+    Parameters
+    -------------------
+    
+    length: int
+        Length of ship
+    coords: tuple (int, int, str)
+        (startCoordY, startCoordX, direction('u', 'd', 'l', 'r'))
+    board: 10x10 numpy array
+        Filled with ' ', 'O', 'X'
+    """
     if coords[2] == 'l':
         if coords[1] < length-1:
             return(False)
@@ -216,28 +236,28 @@ def __checkValidShipPlacement__(length, coords, board):
 
 def checkValidShotLocation(guess, player):
     if player == "p1":
-        if p1.guessBoard[guess[0]][guess[1]] == 'O' or p1.guessBoard[guess[0]][guess[1]] == 'X':
+        if p1.guessBoard[guess[0]][guess[1]] in 'OX01234' :
             return(False)
         return(True)
     elif player == "p2":
-        if p2.guessBoard[guess[0]][guess[1]] == 'O' or p2.guessBoard[guess[0]][guess[1]] == 'X':
+        if p2.guessBoard[guess[0]][guess[1]] in 'OX01234':
             return(False)
         return(True)
 
 def printBoard(name, board, boardType, player):
     letters = "ABCDEFGHIJ"
     if player == "p1":
-        print("\033[1;35;48m   " + name + "\'s " + boardType)
+        print(colors.P1 + "   " + name + "\'s " + boardType)
     else:
-        print("\033[1;33;48m   " + name + "\'s " + boardType)
-    print("\n\033[1;34;48m  ", end="")
+        print(colors.P2 + "   " + name + "\'s " + boardType)
+    print("\n" + colors.WATER + "  ", end="")
     for i in range(10):
         print("  " + str(i) + " ", end="")
     print("\n  " + 10*"+---", end="+\n")
     for y in range(10):
         print(letters[y] + " ", end="")
         for x in range(10):
-            print("|\033[1;30;48m " + board[y][x] + "\033[1;34;48m", end=" ")
+            print("|" + colors.SHIPS + " " + board[y][x] + colors.WATER, end=" ")
         print("| " + letters[y])
         print("  " + 10*"+---", end="+\n")
     print("  ", end="")
@@ -249,10 +269,10 @@ def printBoard2(p1name, p1board, p1boardType, p2name, p2board, p2boardType):
     letters, numbers = "ABCDEFGHIJ", "0123456789"
     spacesBetweenNames = 36 - len(p1name)
     if spacesBetweenNames > 0:
-        print("\033[1;35;48m   " + p1name + "\'s " + p1boardType + spacesBetweenNames*" " + "\033[1;33;48m" + p2name + "\'s " + p2boardType)
+        print(colors.P1 + "   " + p1name + "\'s " + p1boardType + spacesBetweenNames*" " + colors.P2 + p2name + "\'s " + p2boardType)
     else:
-        print("\033[1;35;48m   " + p1name + "\'s " + p1boardType + 5*" " + p2name + "\'s " + p2boardType)
-    print("\n\033[1;34;48m    " + "   ".join(str(p) for p in numbers) + "       " + "   ".join(str(p) for p in numbers))
+        print(colors.P1 + "   " + p1name + "\'s " + p1boardType + 5*" " + colors.P2 + p2name + "\'s " + p2boardType)
+    print(colors.WATER + "\n    " + "   ".join(str(p) for p in numbers) + "       " + "   ".join(str(p) for p in numbers))
     for row in range(0, 10):
         if row == 0:
             print("  " + 10*"+---", end="+")
@@ -263,24 +283,24 @@ def printBoard2(p1name, p1board, p1boardType, p2name, p2board, p2boardType):
         print(letters[row], end = " ")
         for col in range(0, 10):
             if p1board[row][col] == 'X':
-                print("| " + "\033[1;31;48m" + p1board[row][col] + "\033[1;34;48m ", end="")
+                print("| " + colors.RED + p1board[row][col] + colors.WATER + " ", end="")
             elif p1board[row][col] == 'O' or p1board[row][col] in "01234":
-                print("| " + "\033[1;37;48m" + p1board[row][col] + "\033[1;34;48m ", end="")
+                print("| " + colors.WHITE + p1board[row][col] + colors.WATER + " ", end="")
             elif p1board[row][col] in "CBSRD":
-                print("| " + "\033[1;30;48m" + p1board[row][col] + "\033[1;34;48m ", end="")
+                print("| " + colors.SHIPS + p1board[row][col] + colors.WATER + " ", end="")
             else:
-                print("| " + p1board[row][col] + "\033[1;34;48m ", end="")
+                print("| " + p1board[row][col] + colors.WATER + " ", end="")
         print("| " + letters[row], end="")
         print(" ", end = "")
         for col in range(0, 10):
             if p2board[row][col] == 'X':
-                print("| " + "\033[1;31;48m" + p2board[row][col] + "\033[1;34;48m ", end="")
+                print("| " + colors.RED + p2board[row][col] + colors.WATER + " ", end="")
             elif p2board[row][col] == 'O' or p2board[row][col] in "01234":
-                print("| " + "\033[1;37;48m" + p2board[row][col] + "\033[1;34;48m ", end="")
+                print("| " + colors.WHITE + p2board[row][col] + colors.WATER + " ", end="")
             elif p2board[row][col] in "CBSRD":
-                print("| " + "\033[1;30;48m" + p2board[row][col] + "\033[1;34;48m ", end="")
+                print("| " + colors.SHIPS + p2board[row][col] + colors.WATER + " ", end="")
             else:
-                print("| " + p2board[row][col] + "\033[1;34;48m ", end="")
+                print("| " + p2board[row][col] + colors.WATER + " ", end="")
         print("| " + letters[row], end="")
     print("\n" + "  " + 10*"+---" + "+   " + 10*"+---", end="+\n")
     print("    " + "   ".join(str(p) for p in numbers) + "       " + "   ".join(str(p) for p in numbers))
@@ -452,13 +472,13 @@ if numPlayers == '1':
     while True:
         print("Select AI Difficulty:\nEasy     Medium     Hard")
         inpt = input()
-        if inpt.lower() == "easy" or inpt.lower() == 'e':
+        if inpt.lower() in "easy" or "easy" in inpt.lower():
             AIDiff = 1
             break
-        elif inpt.lower() == "medium" or inpt.lower() == 'm':
+        elif inpt.lower() in "medium" or "medium" in inpt.lower():
             AIDiff = 2
             break
-        elif inpt.lower() == "hard" or inpt.lower() == 'h':
+        elif inpt.lower() in "hard" or "hard" in inpt.lower():
             AIDiff = 3
             break
     p1.setShips("p1")
@@ -491,12 +511,16 @@ if numPlayers == '1':
         print(500*"\n")
         p2AIBoard = makeAIPrintBoard()
         printBoard2(p1.name, p1.guessBoard, "Radar", p2.name, p2AIBoard, "Radar")
-        print("\033[1;37;48m")
-        #AIShots.__printHeatMap__([p1c, p1b, p1r, p1s, p1d], p2.guessBoard, AIMode)
-        #-----------------------------------------------------
-        AIGuess = AIShots.search(3, [p1c, p1b, p1r, p1s, p1d], p2.guessBoard)
-#        AIShots.__printHeatMap__([p1c, p1b, p1r, p1s, p1d], p2.guessBoard)
-        #-----------------------------------------------------
+        
+        #======================PRINT HEATMAP=========================================
+#        AIMode = AIShots.updateMode()
+#        if AIMode == "search":
+#            AIGuess = AIShots.search(AIDiff, [p1c, p1b, p1r, p1s, p1d], p2.guessBoard)
+#        elif AIMode == "target":
+#            AIGuess = AIShots.target([p1c, p1b, p1r, p1s, p1d])
+#        AIShots.__printHeatMap__([p1c, p1b, p1r, p1s, p1d], p2.guessBoard, AIMode, AIDiff)
+        #============================================================================
+        
         p1Sunk = []
         if p1c == True:
             p1Sunk.append("aircraft carrier")
@@ -520,14 +544,14 @@ if numPlayers == '1':
         if p2d == True:
             p2Sunk.append("destroyer")
         if len(p2Sunk) > 0:
-            print("\033[1;35;48m" + p1.name + "\033[1;37;48m has sunk the enemy's " + ", ".join(str(p) for p in p2Sunk))
+            print(colors.P1 + p1.name + colors.WHITE + " has sunk the enemy's " + ", ".join(str(p) for p in p2Sunk))
         else:
-            print("\033[1;35;48m" + p1.name + "\033[1;37;48m has sunk \033[1;31;48mnone\033[1;37;48m of the enemy's ships")
+            print(colors.P1 + p1.name + colors.WHITE + " has sunk " + colors.RED + "none" + colors.WHITE + " of the enemy's ships")
         if len(p1Sunk) > 0:
-            print("\033[1;33;48m" + p2.name + "\033[1;37;48m has sunk the enemy's " + ", ".join(str(p) for p in p1Sunk))
+            print(colors.P2 + p2.name + colors.WHITE + " has sunk the enemy's " + ", ".join(str(p) for p in p1Sunk))
         else:
-            print("\033[1;33;48m" + p2.name + "\033[1;37;48m has sunk \033[1;31;48mnone\033[1;37;48m of the enemy's ships")
-        print("\033[1;35;48m" + p1.name + "\033[1;37;48m, enter coordinates:")
+            print(colors.P2 + p2.name + colors.WHITE + " has sunk " + colors.RED + "none" + colors.WHITE + " of the enemy's ships")
+        print(colors.P1 + p1.name + colors.WHITE + ", enter coordinates:")
         inpt = input()
         while True:
             if checkShotSyntax(inpt) == True:
@@ -570,28 +594,26 @@ if numPlayers == '1':
 
         AIGuess = (0, 0)
         #Easy AI
+        AIMode = AIShots.updateMode()
         if AIDiff == 1:
-            AIMode = AIShots.updateMode()
             if AIMode == "search":
-                AIGuess = AIShots.search(1, [], p2.guessBoard)
+                AIGuess = AIShots.search(1, [p1c, p1b, p1r, p1s, p1d], p2.guessBoard)
             elif AIMode == "target":
-                AIGuess = AIShots.target(1, [])
+                AIGuess = AIShots.target([p1c, p1b, p1r, p1s, p1d])
 
         #Medium AI
         elif AIDiff == 2:
-            AIMode = AIShots.updateMode()
             if AIMode == "search":
-                AIGuess = AIShots.search(2, [], p2.guessBoard)
+                AIGuess = AIShots.search(2, [p1c, p1b, p1r, p1s, p1d], p2.guessBoard)
             elif AIMode == "target":
-                AIGuess = AIShots.target(2, [])
+                AIGuess = AIShots.target([p1c, p1b, p1r, p1s, p1d])
                 
         #Hard AI
         elif AIDiff == 3:
-            AIMode = AIShots.updateMode()
             if AIMode == "search":
                 AIGuess = AIShots.search(3, [p1c, p1b, p1r, p1s, p1d], p2.guessBoard)
             elif AIMode == "target":
-                AIGuess = AIShots.target(3, [p1c, p1b, p1r, p1s, p1d])
+                AIGuess = AIShots.target([p1c, p1b, p1r, p1s, p1d])
 
 
 
@@ -654,6 +676,9 @@ if numPlayers == '1':
 #======================================================================================================
 
 #============================== 2 Player ==============================================================
+p1c, p1b, p1d, p1s, p1r, p2c, p2b, p2d, p2s, p2r = False, False, False, False, False, False, False, False, False, False
+winner = ""
+
 if numPlayers == "2":
     moreShotsVersion = False
     minesweeper = False
@@ -696,6 +721,7 @@ if numPlayers == "2":
     while gameOver == False:
         
 #===========PLAYER 1==============================================
+        p1Turns = 1
         if moreShotsVersion == True:
             p1Turns = 0
             if p1c == False:
@@ -708,12 +734,10 @@ if numPlayers == "2":
                 p1Turns += 1
             if p1r == False:
                 p1Turns += 1
-        else:
-            p1Turns = 1
         for i in range(0, p1Turns):
             print(500*"\n")
             printBoard2(p1.name, p1.guessBoard, "Radar", p2.name, p2.guessBoard, "Radar")
-            print("\033[1;37;48m")
+            print(colors.WHITE)
             p1Sunk = []
             if p1c == True:
                 p1Sunk.append("aircraft carrier")
@@ -737,14 +761,14 @@ if numPlayers == "2":
             if p2d == True:
                 p2Sunk.append("destroyer")
             if len(p2Sunk) > 0:
-                print("\033[1;35;48m" + p1.name + "\033[1;37;48m has sunk the enemy's " + ", ".join(str(p) for p in p2Sunk))
+                print(colors.P1 + p1.name + colors.WHITE + " has sunk the enemy's " + ", ".join(str(p) for p in p2Sunk))
             else:
-                print("\033[1;35;48m" + p1.name + "\033[1;37;48m has sunk \033[1;31;48mnone\033[1;37;48m of the enemy's ships")
+                print(colors.P1 + p1.name + colors.WHITE + " has sunk " + colors.RED + "none" + colors.WHITE + " of the enemy's ships")
             if len(p1Sunk) > 0:
-                print("\033[1;33;48m" + p2.name + "\033[1;37;48m has sunk the enemy's " + ", ".join(str(p) for p in p1Sunk))
+                print(colors.P2 + p2.name + colors.WHITE + " has sunk the enemy's " + ", ".join(str(p) for p in p1Sunk))
             else:
-                print("\033[1;33;48m" + p2.name + "\033[1;37;48m has sunk \033[1;31;48mnone\033[1;37;48m of the enemy's ships")
-            print("\033[1;35;48m" + p1.name + "\033[1;37;48m, enter coordinates:")
+                print(colors.P2 + p2.name + colors.WHITE + " has sunk " + colors.RED + "none" + colors.WHITE + " of the enemy's ships")
+            print(colors.P1 + p1.name + colors.WHITE + ", enter coordinates:")
             inpt = input()
             while True:
                 if checkShotSyntax(inpt) == True:
@@ -773,11 +797,12 @@ if numPlayers == "2":
                 winner = "p1"
                 gameOver = True
                 break
-            
-        if gameOver == True:
-            break
+                
+            if gameOver == True:
+                break
         
 #===========PLAYER 2==============================================   
+        p2Turns = 1        
         if moreShotsVersion == True:
             p2Turns = 0
             if p2c == False:
@@ -790,12 +815,10 @@ if numPlayers == "2":
                 p2Turns += 1
             if p2r == False:
                 p2Turns += 1
-        else:
-            p2Turns = 1
         for i in range(0, p2Turns):
             print(500*"\n")
             printBoard2(p1.name, p1.guessBoard, "Radar", p2.name, p2.guessBoard, "Radar")
-            print("\033[1;37;48m")
+            print(colors.WHITE)
             p1Sunk = []
             if p1c == True:
                 p1Sunk.append("aircraft carrier")
@@ -819,14 +842,14 @@ if numPlayers == "2":
             if p2d == True:
                 p2Sunk.append("destroyer")
             if len(p2Sunk) > 0:
-                print("\033[1;35;48m" + p1.name + "\033[1;37;48m has sunk the enemy's " + ", ".join(str(p) for p in p2Sunk))
+                print(colors.P1 + p1.name + colors.WHITE + " has sunk the enemy's " + ", ".join(str(p) for p in p2Sunk))
             else:
-                print("\033[1;35;48m" + p1.name + "\033[1;37;48m has sunk \033[1;31;48mnone\033[1;37;48m of the enemy's ships")
+                print(colors.P1 + p1.name + colors.WHITE + " has sunk " + colors.RED + "none" + colors.WHITE + " of the enemy's ships")
             if len(p1Sunk) > 0:
-                print("\033[1;33;48m" + p2.name + "\033[1;37;48m has sunk the enemy's " + ", ".join(str(p) for p in p1Sunk))
+                print(colors.P2 + p2.name + colors.WHITE + " has sunk the enemy's " + ", ".join(str(p) for p in p1Sunk))
             else:
-                print("\033[1;33;48m" + p2.name + "\033[1;37;48m has sunk \033[1;31;48mnone\033[1;37;48m of the enemy's ships")
-            print("\033[1;33;48m" + p2.name + "\033[1;37;48m, enter coordinates:")
+                print(colors.P2 + p2.name + colors.WHITE + " has sunk " + colors.RED + "none" + colors.WHITE + " of the enemy's ships")
+            print(colors.P2 + p2.name + colors.WHITE + ", enter coordinates:")
             inpt = input()
             while True:
                 if checkShotSyntax(inpt) == True:
@@ -855,7 +878,7 @@ if numPlayers == "2":
                 winner = "p2"
                 gameOver = True
                 break
-            
+                
             
             
 
@@ -867,7 +890,7 @@ p2FinalBoard = makeFinalBoard("p2")
 
 
 if winner == "p1":
-    print("\033[1;35;48m" + p1.name + "\033[1;37;48m wins!\n")
+    print(colors.P1 + p1.name + colors.WHITE + " wins!\n")
     p1Sunk = []
     if p1c == True:
         p1Sunk.append("aircraft carrier")
@@ -880,12 +903,12 @@ if winner == "p1":
     if p1d == True:
         p1Sunk.append("destroyer")
     if len(p1Sunk) == 0:
-        print("\033[1;33;48m" + p2.name + "\033[1;37;48m sunk none of \033[1;35;48m" + p1.name + "\033[1;37;48m\'s ships!")
+        print(colors.P2 + p2.name + colors.WHITE + " sunk none of " + colors.P1 + p1.name + "'s ships!" + colors.WHITE)
     else:
-        print("\033[1;33;48m" + p2.name + "\033[1;37;48m sunk \033[1;35;48m" + p1.name + "'s\033[1;37;48m ", end="")
+        print(colors.P2 + p2.name + colors.WHITE + " sunk " + colors.P1 + p1.name + "'s ", end=colors.WHITE)
         print(", ".join(str(p) for p in p1Sunk))
 elif winner == "p2":
-    print("\033[1;33;48m" + p2.name + "\033[1;37;48m wins!\n")
+    print(colors.P2 + p2.name + colors.WHITE + " wins!\n")
     p2Sunk = []
     if p2c == True:
         p2Sunk.append("aircraft carrier")
@@ -898,9 +921,9 @@ elif winner == "p2":
     if p2d == True:
         p2Sunk.append("destroyer")
     if len(p2Sunk) == 0:
-        print("\033[1;35;48m" + p1.name + "\033[1;37;48m sunk none of \033[1;33;48m" + p2.name + "\033[1;37;48m\'s ships!")
+        print(colors.P1 + p1.name + colors.WHITE + " sunk none of " + colors.P2 + p2.name + "'s ships!" + colors.WHITE)
     else:
-        print("\033[1;35;48m" + p1.name + "\033[1;37;48m sunk \033[1;33;48m" + p2.name + "'s\033[1;37;48m ", end="")
+        print(colors.P1 + p1.name + colors.WHITE + " sunk " + colors.P2 + p2.name + "'s ", end=colors.WHITE)
         print(", ".join(str(p) for p in p2Sunk))
 
 print("")
